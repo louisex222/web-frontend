@@ -88,7 +88,7 @@ new Server({
       const page = Number(request.queryParams.page)
 
       let data = schema.jobLists.all().models
-        .map(({ attrs: { companyPhoto, description, ...rest}}) => rest)
+        .map(({ id, attrs: { companyPhoto, description, ...rest}}) => ({ id, ...rest}))
 
       if(!isNaN(prePage) && !isNaN(page)) {
         const startIndex = (page - 1) * prePage
@@ -120,14 +120,14 @@ new Server({
 
     this.get('/jobs/:id', (schema, request) => {
       const id = request.params.id
-      const data = schema.jobLists.all().models
+      const job = schema.jobLists.all().models
         .find(item => item.id === id)
 
-      if(data) {
-        const { preview, educationId, salaryId, ...rest } = data.attrs
-        return rest
+      if(job) {
+        const { preview, educationId, salaryId, ...rest } = job.attrs
+        return { id: job.id, ...rest }
       } else {
-        return []
+        return {}
       }
     })
   }
